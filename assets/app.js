@@ -1,4 +1,4 @@
-/* app.js — вынесено из утверждённых шаблонов (урок + оглавление). Поведение: тема, тогглы 拼音/RU, поповеры слов, сбор ответов, подсветка секций. */
+/* app.js — вынесено из утверждённых шаблонов (урок + оглавление; обновлено по сайт_шаблон_урока.html от 2026-10-23). Поведение: тема, тогглы 拼音/RU, поповеры слов, сбор ответов, подсветка секций. */
 (function(){
   const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
   const store={get:k=>{try{return localStorage.getItem(k)}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}}};
@@ -27,7 +27,7 @@
     e.stopPropagation();
   });
   document.addEventListener('keydown',e=>{if(e.key==='Escape')killPop()});
-  window.addEventListener('scroll',killPop,{passive:true});
+  let st=0;window.addEventListener('scroll',()=>{if(st)return;st=requestAnimationFrame(()=>{st=0;if(document.querySelector('.pop'))killPop()})},{passive:true});
 
   /* answers */
   const ans={};
@@ -37,10 +37,15 @@
   const cp=$('#copy');
   if(cp)cp.onclick=async()=>{const t=ansLine.textContent;try{await navigator.clipboard.writeText(t);cp.textContent='Скопировано ✓';setTimeout(()=>cp.textContent='Скопировать ответы',1500)}catch(e){prompt('Скопируй:',t)}};
 
-  /* section strip */
-  const links=$$('#secnav a'), secs=links.map(a=>$(a.getAttribute('href')));
-  if(links.length&&'IntersectionObserver' in window){
-    const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){links.forEach(l=>l.classList.remove('on'));const i=secs.indexOf(en.target);if(i>-1){links[i].classList.add('on');links[i].scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})}}})},{rootMargin:'-45% 0px -50% 0px'});
-    secs.forEach(s=>s&&io.observe(s));
+  /* section strip (из шаблона 2026-10-23: без smooth-прокрутки полосы, клик — плавный переход к секции) */
+  const links=$$('#secnav a'), secs=links.map(a=>$(a.getAttribute('href'))), nav=$('#secnav');
+  if(links.length&&nav){
+    let cur=-1, raf=0;
+    const setActive=i=>{if(i===cur||i<0)return;cur=i;links.forEach((l,k)=>l.classList.toggle('on',k===i));const el=links[i],L=el.offsetLeft-nav.clientWidth/2+el.offsetWidth/2;nav.scrollTo({left:Math.max(0,L),behavior:'auto'})};
+    if('IntersectionObserver' in window){
+      const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){const i=secs.indexOf(en.target);if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(()=>setActive(i))}})},{rootMargin:'-40% 0px -55% 0px',threshold:0});
+      secs.forEach(s=>s&&io.observe(s));
+    }
+    links.forEach((a,i)=>a.addEventListener('click',e=>{if(!secs[i])return;e.preventDefault();secs[i].scrollIntoView({behavior:'smooth',block:'start'});history.replaceState(null,'',a.getAttribute('href'))}));
   }
 })();

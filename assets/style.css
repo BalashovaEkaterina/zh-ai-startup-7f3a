@@ -30,6 +30,7 @@ a{color:var(--blue-ink);text-decoration:none}
 button{font:inherit;cursor:pointer}
 .han{font-family:var(--han)}
 .hans{font-family:var(--hans)}
+.top,.secnav{will-change:transform}
 
 /* top bar */
 .top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1.5px solid var(--line2)}
@@ -56,7 +57,7 @@ h1 .no{display:block;font-family:var(--sans);font-weight:700;font-size:13.5px;le
 .lead .han{font-size:18px}
 
 /* section strip */
-.secnav{position:sticky;top:63px;z-index:15;display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;margin:0 -24px 8px;padding-inline:24px;scrollbar-width:none;background:linear-gradient(var(--bg) 72%,transparent)}
+.secnav{position:sticky;top:63px;z-index:15;display:flex;gap:6px;overflow-x:auto;padding:10px 0 12px;margin:0 -24px 8px;padding-inline:24px;scrollbar-width:none;background:var(--bg)}
 @media (max-width:640px){.secnav{margin:0 -12px 8px;padding-inline:12px}}
 .secnav::-webkit-scrollbar{display:none}
 .secnav a{flex:0 0 auto;min-height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 13px;border-radius:var(--r3);background:var(--card);border:1.5px solid var(--line2);color:var(--ink);font-size:14.5px;font-weight:600;white-space:nowrap;transition:background .15s,color .15s}
